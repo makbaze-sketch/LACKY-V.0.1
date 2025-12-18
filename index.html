@@ -2,563 +2,385 @@
 <html lang="ru">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Рулетка</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Рулетка скидок</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    :root{
-      --bg:#0b0b12;
-      --card:#141425;
-      --text:#f3f4ff;
-      --muted:#aab0d6;
-      --accent:#ffd36a;
-      --stroke:rgba(255,255,255,.08);
-      --shadow:0 18px 60px rgba(0,0,0,.45);
-      --radius:18px;
-    }
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      min-height:100vh;
-      background: radial-gradient(900px 560px at 50% 0%, #15153a 0%, var(--bg) 60%);
-      color:var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      -webkit-font-smoothing: antialiased;
-      padding: 18px 14px 28px;
-    }
-    .card{
-      max-width: 560px;
-      margin: 0 auto;
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border: 1px solid var(--stroke);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      padding: 14px 14px 18px;
-      position: relative;
-      overflow: hidden;
-    }
-    .top{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom: 10px;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--stroke);
-      background: rgba(0,0,0,.22);
-      color: var(--text);
-      font-weight: 800;
-      letter-spacing: .2px;
-    }
-    .pill small{ color: var(--muted); font-weight: 700; }
-    .row{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
-    }
-    .gear{
-      margin-left:auto;
-      width: 40px; height: 40px;
-      display:flex; align-items:center; justify-content:center;
-      border-radius: 12px;
-      border: 1px solid var(--stroke);
-      background: rgba(0,0,0,.22);
-      cursor: pointer;
-      user-select:none;
-    }
-    .wheelWrap{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      margin: 10px 0 10px;
-      position: relative;
-    }
-    canvas{
-      width: min(92vw, 480px);
-      aspect-ratio: 1 / 1;
-      border-radius: 999px;
-      background: rgba(0,0,0,.12);
-      border: 1px solid var(--stroke);
-      box-shadow: 0 22px 70px rgba(0,0,0,.35);
-      transform: rotate(0deg);
-      transition: transform 4.2s cubic-bezier(.12,.72,.12,1);
-    }
-    .pointer{
-      position:absolute;
-      top: -2px;
-      width: 0; height: 0;
-      border-left: 14px solid transparent;
-      border-right: 14px solid transparent;
-      border-top: 22px solid var(--accent);
-      filter: drop-shadow(0 8px 18px rgba(0,0,0,.45));
-    }
-    .btn{
-      width: 100%;
-      margin-top: 8px;
-      border: none;
-      border-radius: 16px;
-      padding: 14px 14px;
-      font-weight: 900;
-      font-size: 16px;
-      letter-spacing: .2px;
-      color: #0b0b12;
-      background: linear-gradient(180deg, #ffe9a6, #ffd36a);
-      box-shadow: 0 16px 40px rgba(0,0,0,.35);
-    }
-    .btn:disabled{
-      opacity: .45;
-      filter: grayscale(.35);
-    }
-    .msg{
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.35;
-      min-height: 36px;
-    }
-    .fine{
-      margin-top: 10px;
-      color: rgba(170,176,214,.75);
-      font-size: 12px;
-      line-height: 1.35;
-    }
-    .apiBox{
-      display:none;
-      gap:8px;
-      margin-top: 10px;
-    }
-    .apiBox input{
-      flex:1;
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--stroke);
-      background: rgba(0,0,0,.22);
-      color: var(--text);
-      outline: none;
-      font-weight: 700;
-    }
-    .apiBox button{
-      padding: 12px 12px;
-      border-radius: 14px;
-      border: 1px solid var(--stroke);
-      background: rgba(255,255,255,.08);
-      color: var(--text);
-      font-weight: 900;
-    }
+    :root{--bg:#0b0f1a;--card:#0f172a;--muted:#94a3b8;--txt:#e2e8f0;--acc:#fbbf24;--acc2:#fde68a}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#070a12 0%,#0b1020 100%);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,Arial}
+    .wrap{max-width:520px;margin:0 auto;padding:16px 14px 22px}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:10px 12px;display:flex;align-items:center;gap:8px}
+    .pill b{font-size:16px}
+    .muted{color:var(--muted);font-size:13px;line-height:1.35}
+    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:14px;margin-top:12px}
+    .wheelBox{display:flex;justify-content:center;align-items:center;margin:14px 0 8px;position:relative}
+    canvas{width:min(420px,92vw);height:min(420px,92vw);max-width:420px;max-height:420px}
+    .pointer{position:absolute;top:-6px;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:22px solid var(--acc);filter:drop-shadow(0 8px 10px rgba(0,0,0,.45))}
+    .btn{width:100%;border:0;border-radius:16px;padding:16px 16px;font-size:18px;font-weight:700;background:linear-gradient(180deg,var(--acc2),var(--acc));color:#111827;cursor:pointer}
+    .btn[disabled]{opacity:.45;cursor:not-allowed}
+    .danger{color:#fecaca}
+    .ok{color:#bbf7d0}
+    .tiny{font-size:12px;color:var(--muted)}
+    .input{width:100%;box-sizing:border-box;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.18);color:var(--txt);padding:12px 12px;outline:none}
+    .actions{display:flex;gap:10px;margin-top:10px}
+    .btn2{flex:1;border-radius:14px;padding:12px 12px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--text);cursor:pointer}
+    .toast{margin-top:10px;font-size:14px}
+    code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:8px}
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="top">
-      <div class="row">
-        <div class="pill">Баланс: <span id="bal">…</span>⭐</div>
-        <div class="pill">Спин: <span id="cost">…</span>⭐</div>
-        <div class="pill">🎁 Бесплатный: <span id="free">…</span></div>
+  <div class="wrap">
+    <div class="row">
+      <div class="pill"><b>Баланс:</b> <span id="bal">…</span>⭐</div>
+      <div class="pill"><b>Спин:</b> <span id="cost">…</span>⭐</div>
+      <div class="pill">🎁 <b>Бесплатный:</b> <span id="free">…</span></div>
+    </div>
+
+    <div class="card">
+      <div class="wheelBox">
+        <div class="pointer"></div>
+        <canvas id="wheel" width="900" height="900"></canvas>
       </div>
-      <div class="gear" id="gear" title="Настроить API">⚙️</div>
-    </div>
+      <button id="spinBtn" class="btn" disabled>Крутить 🎡</button>
+      <div id="toast" class="toast muted"></div>
 
-    <div class="wheelWrap">
-      <div class="pointer"></div>
-      <canvas id="wheel" width="600" height="600"></canvas>
-    </div>
-
-    <button class="btn" id="spinBtn" disabled>Крутить 🎡</button>
-    <div class="apiBox" id="apiBox">
-      <input id="apiInput" placeholder="https://YOUR-BOT-DOMAIN (без / в конце)" />
-      <button id="apiSave">Сохранить</button>
-    </div>
-    <div class="msg" id="msg">Загружаю…</div>
-    <div class="fine">
-      Если открыть не через кнопку WebApp в боте, Telegram может не передать <b>initData</b>, и спин будет недоступен.
+      <div class="card" style="margin-top:12px">
+        <div class="muted" style="margin-bottom:8px">
+          Если <code>initData</code> пустой, Telegram не дал сессию. Не жми “обновить” в мини-аппе. Закрой и открой заново кнопкой в боте.
+        </div>
+        <div class="actions">
+          <button class="btn2" id="closeBtn">Закрыть</button>
+          <button class="btn2" id="copyBtn">Копировать debug</button>
+        </div>
+        <div style="margin-top:10px">
+          <div class="tiny">API (если не подхватился из <code>?api=</code>):</div>
+          <input id="apiInput" class="input" placeholder="https://your-api-domain" />
+          <div class="actions">
+            <button class="btn2" id="saveApiBtn">Сохранить API</button>
+            <button class="btn2" id="reloadBtn">Перезагрузить данные</button>
+          </div>
+        </div>
+        <div id="debug" class="tiny" style="margin-top:10px;white-space:pre-wrap"></div>
+      </div>
     </div>
   </div>
 
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script>
-  (() => {
-    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-    if (tg){ try{ tg.ready(); tg.expand(); }catch(e){} }
+<script>
+(function(){
+  const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 
-    const elBal = document.getElementById('bal');
-    const elCost = document.getElementById('cost');
-    const elFree = document.getElementById('free');
-    const elBtn = document.getElementById('spinBtn');
-    const elMsg = document.getElementById('msg');
-    const elGear = document.getElementById('gear');
-    const elApiBox = document.getElementById('apiBox');
-    const elApiInput = document.getElementById('apiInput');
-    const elApiSave = document.getElementById('apiSave');
+  // Expand + theme
+  try { tg && tg.expand(); } catch(e){}
+  const qs = new URLSearchParams(location.search);
+  const storedApi = localStorage.getItem('lucky_api_base') || '';
+  let apiBase = (qs.get('api') || storedApi || '').trim().replace(/\/+$/,'');
+  const initData = (tg && tg.initData) ? tg.initData : '';
+  const initLen = initData ? initData.length : 0;
 
-    const canvas = document.getElementById('wheel');
-    const ctx = canvas.getContext('2d');
+  const elBal = document.getElementById('bal');
+  const elCost = document.getElementById('cost');
+  const elFree = document.getElementById('free');
+  const btn = document.getElementById('spinBtn');
+  const toast = document.getElementById('toast');
+  const debug = document.getElementById('debug');
+  const apiInput = document.getElementById('apiInput');
 
-    const qs = new URLSearchParams(location.search);
-    const storedApi = localStorage.getItem('lucky_api_base') || '';
-    let API = (qs.get('api') || '').trim() || storedApi.trim();
+  apiInput.value = apiBase;
 
-    // initData может появиться чуть позже
-    let initData = (tg && tg.initData) ? tg.initData : '';
-    setTimeout(() => {
-      if (!initData && tg && tg.initData) initData = tg.initData;
-      updateBtn();
-    }, 350);
+  let cfg = null;
+  let state = {balance:0, cost:15, free_available:false, free_left_sec:0};
 
-    let segments = [];
-    let balance = 0;
-    let cost = 15;
+  function setToast(msg, kind){
+    toast.className = 'toast ' + (kind==='ok'?'ok': kind==='bad'?'danger':'muted');
+    toast.textContent = msg || '';
+  }
 
-    let freeAvailable = false;
-    let freeLeftSec = 0;
+  function formatLeft(sec){
+    sec = Math.max(0, Math.floor(sec||0));
+    const h = String(Math.floor(sec/3600)).padStart(2,'0');
+    const m = String(Math.floor((sec%3600)/60)).padStart(2,'0');
+    const s = String(sec%60).padStart(2,'0');
+    return `${h}:${m}:${s}`;
+  }
 
-    let locked = false;
-    let rotation = 0; // degrees
-    let tickTimer = null;
+  function canSpin(){
+    const hasApi = !!apiBase;
+    const hasInit = initLen>0;
+    const hasFree = !!state.free_available;
+    const hasStars = (state.balance||0) >= (state.cost||0);
+    return hasApi && hasInit && (hasFree || hasStars);
+  }
 
-    function say(html){ elMsg.innerHTML = html; }
-    function fmtTime(sec){
-      sec = Math.max(0, Math.floor(sec));
-      const h = String(Math.floor(sec/3600)).padStart(2,'0');
-      const m = String(Math.floor((sec%3600)/60)).padStart(2,'0');
-      const s = String(sec%60).padStart(2,'0');
-      return `${h}:${m}:${s}`;
+  function updateHeader(){
+    elBal.textContent = String(state.balance ?? 0);
+    elCost.textContent = String(state.cost ?? 15);
+
+    if (state.free_available){
+      elFree.textContent = 'доступен ✅';
+    } else {
+      elFree.textContent = 'через ' + formatLeft(state.free_left_sec || 0);
     }
-    function updateFreeUI(){
-      if (freeAvailable) elFree.textContent = 'доступен ✅';
-      else elFree.textContent = 'через ' + fmtTime(freeLeftSec);
+    btn.disabled = !canSpin();
+
+    const user = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user : null;
+    debug.textContent =
+      `apiBase: ${apiBase || '(пусто)'}\n`+
+      `initData length: ${initLen}\n`+
+      `platform: ${(tg && tg.platform) || 'n/a'}\n`+
+      `version: ${(tg && tg.version) || 'n/a'}\n`+
+      `user_id: ${user ? user.id : 'n/a'}\n`+
+      `balance: ${state.balance}\n`+
+      `free_available: ${state.free_available}\n`+
+      `free_left_sec: ${state.free_left_sec}\n`;
+  }
+
+  async function apiFetch(path, opts){
+    if(!apiBase) throw new Error('apiBase пустой');
+    const url = apiBase + path;
+    const headers = Object.assign({'Content-Type':'application/json'}, (opts && opts.headers)||{});
+    const res = await fetch(url, Object.assign({}, opts||{}, {headers, cache:'no-store'}));
+    const txt = await res.text();
+    let data = null;
+    try{ data = JSON.parse(txt); } catch(e){ data = {raw:txt}; }
+    if(!res.ok) {
+      const err = (data && (data.error||data.message)) ? (data.error||data.message) : ('HTTP '+res.status);
+      throw new Error(err);
     }
-    function updateBtn(){
-      const can = freeAvailable || (balance >= cost);
-      elBtn.disabled = locked || !can || !API || !initData;
-      if (!initData){
-        // не спамим, но даём понять почему кнопка неактивна
-        if (API) say('Открой рулетку кнопкой в боте (WebApp), чтобы Telegram передал <b>initData</b>.');
-      }
-    }
+    return data;
+  }
 
-    function showApiInput(){
-      elApiBox.style.display = 'flex';
-      elApiInput.value = API || '';
-    }
-    function hideApiInput(){
-      elApiBox.style.display = 'none';
-    }
-    elGear.addEventListener('click', () => {
-      if (elApiBox.style.display === 'flex') hideApiInput();
-      else showApiInput();
-    });
-    elApiSave.addEventListener('click', () => {
-      const v = (elApiInput.value || '').trim().replace(/\/+$/,'');
-      if (!v){
-        say('Вставь адрес API, например: <b>https://xxxx.ngrok-free.dev</b>');
-        return;
-      }
-      API = v;
-      localStorage.setItem('lucky_api_base', API);
-      hideApiInput();
-      loadAll();
-    });
+  // Canvas wheel
+  const canvas = document.getElementById('wheel');
+  const ctx = canvas.getContext('2d');
+  let segments = [
+    {label:'5%', color:'#1f2937'},
+    {label:'10%', color:'#3b82f6'},
+    {label:'15%', color:'#10b981'},
+    {label:'25%', color:'#8b5cf6'},
+    {label:'50%', color:'#f59e0b'},
+  ];
+  let angle = 0;
+  let spinning = false;
 
-    function apiUrl(path){
-      return API.replace(/\/+$/,'') + path;
-    }
-    async function apiGet(path){
-      const r = await fetch(apiUrl(path), { method:'GET' });
-      const j = await r.json().catch(()=> ({}));
-      if (!r.ok || j.ok === false) throw new Error(j.error || ('http_'+r.status));
-      return j;
-    }
-    async function apiPost(path, body){
-      const r = await fetch(apiUrl(path), {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(body || {})
-      });
-      const j = await r.json().catch(()=> ({}));
-      if (!r.ok || j.ok === false) throw new Error(j.error || ('http_'+r.status));
-      return j;
-    }
+  function drawWheel(){
+    const W=canvas.width, H=canvas.height;
+    const cx=W/2, cy=H/2;
+    const r=W*0.42;
+    ctx.clearRect(0,0,W,H);
 
-    function colorFor(id, i){
-      const k = String(id||'').trim();
-      if (k==='50') return '#ffd36a';
-      if (k==='25') return '#b9ffb1';
-      if (k==='15') return '#8fd3ff';
-      if (k==='10') return '#d8b6ff';
-      if (k==='5')  return '#ffffff';
-      // fallback alternating
-      return (i%2===0) ? '#cfd3ff' : '#f0f1ff';
-    }
+    // outer ring
+    ctx.beginPath();
+    ctx.arc(cx,cy,r+32,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,.03)';
+    ctx.fill();
+    ctx.lineWidth=10;
+    ctx.strokeStyle='rgba(255,255,255,.08)';
+    ctx.stroke();
 
-    function resizeCanvas(){
-      const size = Math.min(520, Math.max(280, Math.floor(Math.min(window.innerWidth*0.92, 480))));
-      const dpr = window.devicePixelRatio || 1;
-      canvas.style.width = size + 'px';
-      canvas.style.height = size + 'px';
-      canvas.width = Math.floor(size * dpr);
-      canvas.height = Math.floor(size * dpr);
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-      drawWheel(size);
-    }
+    const n = segments.length;
+    const slice = (Math.PI*2)/n;
 
-    function drawWheel(sizePx){
-      const size = sizePx;
-      const cx = size/2, cy = size/2;
-      const r = size/2 - 10;
+    for(let i=0;i<n;i++){
+      const a0 = angle + i*slice;
+      const a1 = a0 + slice;
 
-      ctx.clearRect(0,0,size,size);
-
-      // outer soft glow
-      const g = ctx.createRadialGradient(cx,cy, r*0.2, cx,cy, r);
-      g.addColorStop(0, 'rgba(255,255,255,0.06)');
-      g.addColorStop(1, 'rgba(255,255,255,0.00)');
-      ctx.fillStyle = g;
-      ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
-
-      const n = Math.max(1, segments.length || 5);
-      const step = (Math.PI*2)/n;
-      const start0 = -Math.PI/2 - step/2; // центр 0-го сектора прямо сверху
-
-      // sectors
-      for (let i=0;i<n;i++){
-        const seg = segments[i] || {id:'', label:'?'};
-        const a0 = start0 + i*step;
-        const a1 = a0 + step;
-
-        ctx.beginPath();
-        ctx.moveTo(cx,cy);
-        ctx.arc(cx,cy,r,a0,a1);
-        ctx.closePath();
-
-        const base = colorFor(seg.id, i);
-        // slight shade alternating
-        ctx.fillStyle = base + (base.startsWith('#') ? '' : '');
-        ctx.fill();
-
-        // inner cut (for depth)
-        ctx.save();
-        ctx.globalCompositeOperation = 'source-atop';
-        const shade = ctx.createLinearGradient(cx-r,cy-r,cx+r,cy+r);
-        shade.addColorStop(0,'rgba(0,0,0,.18)');
-        shade.addColorStop(1,'rgba(0,0,0,.35)');
-        ctx.fillStyle = shade;
-        ctx.fillRect(0,0,size,size);
-        ctx.restore();
-
-        // separators
-        ctx.strokeStyle = 'rgba(0,0,0,.25)';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        // label
-        const mid = a0 + step/2;
-        ctx.save();
-        ctx.translate(cx,cy);
-        ctx.rotate(mid);
-        ctx.translate(r*0.62, 0);
-        ctx.rotate(Math.PI/2);
-
-        ctx.font = '900 ' + Math.max(16, Math.floor(size*0.06)) + 'px system-ui, -apple-system, Segoe UI, Roboto, Arial';
-        ctx.fillStyle = 'rgba(11,11,18,0.92)';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        const text = (seg.label || (seg.id ? (seg.id+'%') : '?')).replace(/^-/, '');
-        // light plate behind text for readability
-        const padX = 10, padY = 6;
-        const w = ctx.measureText(text).width + padX*2;
-        const h = Math.max(26, Math.floor(size*0.09));
-        ctx.save();
-        ctx.globalAlpha = 0.55;
-        ctx.fillStyle = 'rgba(255,255,255,0.72)';
-        roundRect(ctx, -w/2, -h/2, w, h, 999);
-        ctx.fill();
-        ctx.restore();
-
-        ctx.fillText(text, 0, 0);
-        ctx.restore();
-      }
-
-      // center hub
       ctx.beginPath();
-      ctx.arc(cx,cy,r*0.14,0,Math.PI*2);
-      ctx.fillStyle = 'rgba(0,0,0,.35)';
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(cx,cy,r*0.10,0,Math.PI*2);
-      ctx.fillStyle = 'rgba(255,211,106,.85)';
-      ctx.fill();
-
-      // outer stroke
-      ctx.beginPath();
-      ctx.arc(cx,cy,r,0,Math.PI*2);
-      ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-    }
-
-    function roundRect(ctx, x,y,w,h,r){
-      const rr = Math.min(r, w/2, h/2);
-      ctx.beginPath();
-      ctx.moveTo(x+rr,y);
-      ctx.arcTo(x+w,y,x+w,y+h,rr);
-      ctx.arcTo(x+w,y+h,x,y+h,rr);
-      ctx.arcTo(x,y+h,x,y,rr);
-      ctx.arcTo(x,y,x+w,y,rr);
+      ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,r,a0,a1,false);
       ctx.closePath();
+      ctx.fillStyle = segments[i].color;
+      ctx.fill();
+
+      // separator
+      ctx.strokeStyle='rgba(255,255,255,.10)';
+      ctx.lineWidth=4;
+      ctx.stroke();
+
+      // label
+      ctx.save();
+      ctx.translate(cx,cy);
+      ctx.rotate(a0 + slice/2);
+      ctx.textAlign='right';
+      ctx.fillStyle='rgba(255,255,255,.92)';
+      ctx.font='bold 54px -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial';
+      ctx.shadowColor='rgba(0,0,0,.45)';
+      ctx.shadowBlur=8;
+      ctx.fillText(segments[i].label, r-18, 16);
+      ctx.restore();
     }
 
-    function setRotation(deg){
-      rotation = deg;
-      canvas.style.transform = `rotate(${deg}deg)`;
+    // center
+    ctx.beginPath();
+    ctx.arc(cx,cy,84,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,.10)';
+    ctx.fill();
+    ctx.lineWidth=6;
+    ctx.strokeStyle='rgba(255,255,255,.14)';
+    ctx.stroke();
+  }
+  drawWheel();
+
+  function segmentIndexFromAngle(finalAngle){
+    // Pointer at top (12 o'clock). Our angle rotates wheel, pointer fixed.
+    const n=segments.length;
+    const slice=(Math.PI*2)/n;
+    const norm = ((-finalAngle % (Math.PI*2)) + Math.PI*2) % (Math.PI*2);
+    // pointer hits angle 0. Determine which slice contains it.
+    return Math.floor(norm / slice) % n;
+  }
+
+  function animateToIndex(targetIdx){
+    const n=segments.length;
+    const slice=(Math.PI*2)/n;
+    // We want target slice center to land at pointer (angle 0).
+    const targetCenter = targetIdx*slice + slice/2;
+    // Need angle such that -angle == targetCenter  (mod 2pi) => angle == -targetCenter
+    const desired = -targetCenter;
+
+    const spins = 6; // full rotations
+    const start = angle;
+    // choose end angle as desired - spins*2pi to keep direction consistent
+    let end = desired - spins*(Math.PI*2);
+
+    // If end is too close, add more spins
+    if (Math.abs(end-start) < Math.PI*6) end -= 2*(Math.PI*2);
+
+    const dur = 2600;
+    const t0 = performance.now();
+    spinning=true;
+
+    function easeOutCubic(t){ return 1-Math.pow(1-t,3); }
+
+    function tick(t){
+      const p = Math.min(1,(t-t0)/dur);
+      const e = easeOutCubic(p);
+      angle = start + (end-start)*e;
+      drawWheel();
+      if(p<1) requestAnimationFrame(tick);
+      else { spinning=false; }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  async function loadAll(){
+    setToast('', '');
+    if(!tg){ setToast('Открой внутри Telegram (Mini App).', 'bad'); }
+    if(initLen===0){
+      setToast('initData пустой. Закрой мини-апп и открой заново кнопкой WebApp в боте. Не обновляй страницу.', 'bad');
+    }
+    updateHeader();
+
+    if(!apiBase){
+      setToast('Нет API. Вставь адрес API в поле ниже или открой по ссылке с ?api=...', 'bad');
+      return;
     }
 
-    function animateToIndex(index){
-      const n = Math.max(1, segments.length || 5);
-      const stepDeg = 360 / n;
+    try{
+      cfg = await apiFetch('/api/config', {method:'GET'});
+      // if server returns segments, render them; else keep defaults
+      if(cfg && cfg.segments && Array.isArray(cfg.segments) && cfg.segments.length>=3){
+        segments = cfg.segments.map(s => ({
+          label: s.label || (String(s.id||'')+'%'),
+          color: s.color || '#1f2937',
+          id: s.id
+        }));
+      }
+      state.cost = cfg.cost ?? state.cost;
+      drawWheel();
+    }catch(e){
+      setToast('Конфиг не загрузился: '+e.message, 'bad');
+      return;
+    }
 
-      const currentNorm = ((rotation % 360) + 360) % 360;
-      const desiredNorm = ((-index * stepDeg) % 360 + 360) % 360;
-      const deltaCW = (desiredNorm - currentNorm + 360) % 360;
+    try{
+      const data = await apiFetch('/api/balance?initData='+encodeURIComponent(initData), {method:'GET'});
+      if(data && data.ok){
+        state.balance = data.balance ?? 0;
+        state.free_available = !!data.free_available;
+        state.free_left_sec = data.free_left_sec ?? 0;
+      }
+      updateHeader();
+      setToast('Готово.', 'ok');
+    }catch(e){
+      setToast('Баланс не загрузился: '+e.message, 'bad');
+      updateHeader();
+    }
+  }
 
-      const spins = 4 + Math.floor(Math.random()*3); // 4..6 оборотов
-      const final = rotation + spins*360 + deltaCW;
+  async function doSpin(){
+    if(spinning) return;
+    setToast('', '');
+    btn.disabled = true;
 
-      // force reflow to restart transition reliably
-      canvas.style.transition = 'none';
-      canvas.getBoundingClientRect();
-      canvas.style.transition = 'transform 4.2s cubic-bezier(.12,.72,.12,1)';
-      setRotation(final);
-
-      return new Promise(res => {
-        const onEnd = () => res();
-        canvas.addEventListener('transitionend', onEnd, { once:true });
+    try{
+      const resp = await apiFetch('/api/spin', {
+        method:'POST',
+        body: JSON.stringify({initData})
       });
-    }
 
-    function applyBalancePayload(b){
-      balance = Number(b.balance || 0);
-      cost = Number(b.cost || cost || 15);
-
-      // важный фикс: если сервер не прислал поля (например, balance не загрузился),
-      // то free_available может быть undefined. Тогда считаем по free_left_sec.
-      const fa = (typeof b.free_available === 'boolean') ? b.free_available : null;
-      const fl = Number((b.free_left_sec != null) ? b.free_left_sec : 0);
-      freeLeftSec = Math.max(0, fl);
-
-      if (fa === null){
-        freeAvailable = (freeLeftSec <= 0);
-      } else {
-        freeAvailable = fa || (freeLeftSec <= 0);
-      }
-
-      elBal.textContent = String(balance);
-      elCost.textContent = String(cost);
-      updateFreeUI();
-      updateBtn();
-    }
-
-    function startCountdown(){
-      if (tickTimer) return;
-      tickTimer = setInterval(() => {
-        if (!freeAvailable && freeLeftSec > 0){
-          freeLeftSec -= 1;
-          if (freeLeftSec <= 0){
-            freeLeftSec = 0;
-            freeAvailable = true;
-          }
-          updateFreeUI();
-          updateBtn();
+      // expected: {ok:true, result:{id,label,discount,code}, balance, free_available, free_left_sec}
+      if(resp && resp.ok){
+        const rid = resp.result && (resp.result.id ?? resp.result.discount);
+        // map to segment index by label/id
+        let idx = 0;
+        if(rid!==undefined && rid!==null){
+          const byId = segments.findIndex(s => String(s.id)===String(rid) || String(s.label).replace('%','')===String(rid));
+          idx = byId>=0 ? byId : 0;
         }
-      }, 1000);
-    }
+        animateToIndex(idx);
 
-    async function loadAll(){
-      if (!API){
-        say('Нужен параметр <b>?api=</b> или сохранённый API адрес.');
-        showApiInput();
-        updateBtn();
-        return;
-      }
-      hideApiInput();
-      try{
-        say('Загружаю…');
+        state.balance = resp.balance ?? state.balance;
+        state.free_available = !!resp.free_available;
+        state.free_left_sec = resp.free_left_sec ?? 0;
+        updateHeader();
 
-        const cfg = await apiGet('/api/config');
-        cost = Number(cfg.cost || 15);
-        segments = Array.isArray(cfg.segments) ? cfg.segments : [];
-        if (!segments.length){
-          segments = [
-            {id:'5',label:'5%'},
-            {id:'10',label:'10%'},
-            {id:'15',label:'15%'},
-            {id:'25',label:'25%'},
-            {id:'50',label:'50%'}
-          ];
-        }
-        resizeCanvas();
-
-        if (!initData){
-          say('Открой рулетку кнопкой в боте (WebApp), чтобы Telegram передал <b>initData</b>.');
-          updateBtn();
-          return;
-        }
-
-        const bal = await apiGet('/api/balance?initData=' + encodeURIComponent(initData));
-        applyBalancePayload(bal);
-        startCountdown();
-        say('Можно крутить ✨');
-      }catch(e){
-        console.error(e);
-        say('Ошибка загрузки: <b>' + (e && e.message ? e.message : 'unknown') + '</b>');
-        updateBtn();
-      }
-    }
-
-    elBtn.addEventListener('click', async () => {
-      if (locked) return;
-      locked = true;
-      updateBtn();
-      say('Кручу…');
-      try{
-        const res = await apiPost('/api/spin', { initData });
-        const idx = Number(res?.result?.index ?? 0);
-        await animateToIndex(idx);
-
-        applyBalancePayload(res);
-
-        const percent = Number(res?.result?.percent || 0);
-        const code = res?.result?.code || '';
-        if (percent > 0){
-          say(`Выпало <b>${percent}%</b> ✅<br>Код: <b>${code}</b>`);
-          if (tg){
-            try{
-              tg.showAlert(`Твоя скидка ${percent}%\nКод: ${code}`);
-            }catch(e){}
-          }
+        const disc = resp.result && (resp.result.discount ?? resp.result.id);
+        const code = resp.result && resp.result.code;
+        if(code){
+          setToast(`Выигрыш: ${disc}% 🎉 Код: ${code}`, 'ok');
+          try{ tg && tg.HapticFeedback && tg.HapticFeedback.notificationOccurred('success'); }catch(e){}
         } else {
-          say('Сектор без скидки 😶');
+          setToast(`Результат: ${disc}%`, 'ok');
         }
-      }catch(e){
-        console.error(e);
-        const msg = (e && e.message) ? e.message : 'unknown';
-        if (msg === 'not_enough_stars') say('Не хватает ⭐ для спина. Жди бесплатный или пополни баланс.');
-        else if (msg === 'bad_init_data') say('Telegram не передал initData. Открой рулетку кнопкой в боте.');
-        else say('Ошибка спина: <b>' + msg + '</b>');
-      }finally{
-        locked = false;
-        updateBtn();
+      } else {
+        setToast('Неожиданный ответ сервера', 'bad');
       }
-    });
+    } catch(e){
+      setToast('Спин не прошёл: '+e.message, 'bad');
+    } finally {
+      updateHeader();
+    }
+  }
 
-    window.addEventListener('resize', () => resizeCanvas());
-    resizeCanvas();
-    loadAll();
-  })();
-  </script>
+  // Tick timer for free spin
+  setInterval(() => {
+    if(!state.free_available && state.free_left_sec>0){
+      state.free_left_sec -= 1;
+      if(state.free_left_sec<=0) state.free_available = true;
+      updateHeader();
+    }
+  }, 1000);
+
+  document.getElementById('saveApiBtn').onclick = () => {
+    const v = apiInput.value.trim().replace(/\/+$/,'');
+    apiBase = v;
+    localStorage.setItem('lucky_api_base', apiBase);
+    setToast('API сохранён.', 'ok');
+    updateHeader();
+  };
+  document.getElementById('reloadBtn').onclick = () => loadAll();
+  document.getElementById('closeBtn').onclick = () => { try{ tg && tg.close(); }catch(e){} };
+  document.getElementById('copyBtn').onclick = async () => {
+    const txt = debug.textContent + '\n' + 'url: '+location.href;
+    try{ await navigator.clipboard.writeText(txt); setToast('Debug скопирован.', 'ok'); }
+    catch(e){ setToast('Не смог скопировать: '+e.message, 'bad'); }
+  };
+  btn.onclick = doSpin;
+
+  // Initial load
+  loadAll();
+})();
+</script>
 </body>
 </html>
-

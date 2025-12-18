@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Рулетка</title>
+  <style>
+    :root{
+      --bg:#0b0b12;
+      --card:#141425;
+      --card2:#101020;
+      --text:#f3f4ff;
+      --muted:#aab0d6;
+      --accent:#ffd36a;
+      --danger:#ff6b6b;
+      --ok:#7CFFB2;
+      --stroke:rgba(255,255,255,.08);
+      --shadow:0 18px 60px rgba(0,0,0,.45);
+      --radius:18px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      background: radial-gradient(900px 500px at 50% 0%, #15153a 0%, var(--bg) 55%);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    .wrap{
+      padding:16px 14px 22px;
+      max-width:520px;
+      margin:0 auto;
+    }
+    .top{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .chip{
+      background:linear-gradient(180deg,var(--card),var(--card2));
+      border:1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:800;
+      letter-spacing:.2px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      min-width:170px;
+      justify-content:center;
+    }
+    .chip small{
+      font-weight:700;
+      color:var(--muted);
+    }
+    .bar{
+      margin-top:10px;
+      background:linear-gradient(180deg,var(--card),var(--card2));
+      border:1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      border-radius:999px;
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .bar .label{ color:var(--muted); font-weight:700; }
+    .bar .value{ font-weight:900; }
+    .wheelCard{
+      margin-top:14px;
+      background:linear-gradient(180deg,var(--card), #0f0f1f);
+      border:1px solid var(--stroke);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding:16px 14px 14px;
+    }
+    .wheelBox{
+      position:relative;
+      width:min(420px, 92vw);
+      aspect-ratio:1/1;
+      margin:10px auto 12px;
+    }
+    canvas{
+      width:100%;
+      height:100%;
+      border-radius:50%;
+      display:block;
+      transform: rotate(0deg);
+      will-change: transform;
+    }
+    .pointer{
+      position:absolute;
+      top:-2px;
+      left:50%;
+      transform: translateX(-50%);
+      width:0;height:0;
+      border-left:18px solid transparent;
+      border-right:18px solid transparent;
+      border-bottom:28px solid var(--accent);
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,.35));
+    }
+    .centerDot{
+      position:absolute;
+      inset:0;
+      margin:auto;
+      width:22%;
+      height:22%;
+      border-radius:50%;
+      background: radial-gradient(circle at 40% 35%, #ffffff26 0%, #ffffff10 40%, #00000033 100%);
+      border:1px solid var(--stroke);
+      box-shadow: 0 18px 50px rgba(0,0,0,.45);
+      pointer-events:none;
+    }
+    .btn{
+      width:100%;
+      border:none;
+      border-radius:14px;
+      padding:14px 14px;
+      font-size:17px;
+      font-weight:900;
+      letter-spacing:.2px;
+      background: linear-gradient(180deg, #2b2b4a, #1b1b32);
+      color: var(--text);
+      border: 1px solid var(--stroke);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+    }
+    .btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      filter:grayscale(.25);
+    }
+    .msg{
+      margin-top:12px;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px dashed rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: var(--muted);
+      min-height:46px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      line-height:1.25;
+    }
+    .msg b{ color: var(--text); }
+    .apiBox{
+      margin-top:12px;
+      display:none;
+      gap:10px;
+      flex-direction:column;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+    .apiBox input{
+      width:100%;
+      border-radius:12px;
+      padding:12px 12px;
+      border:1px solid rgba(255,255,255,.12);
+      background:#0b0b15;
+      color:var(--text);
+      outline:none;
+      font-weight:700;
+    }
+    .apiBox .row{
+      display:flex;
+      gap:10px;
+    }
+    .miniBtn{
+      flex:0 0 auto;
+      border:none;
+      border-radius:12px;
+      padding:12px 14px;
+      font-weight:900;
+      background: linear-gradient(180deg,#2a2a44,#18182a);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .fine{
+      margin-top:10px;
+      color:rgba(255,255,255,.35);
+      font-size:12px;
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="chip"><small>Баланс</small><span id="bal">...</span>⭐</div>
+    <div class="chip"><small>Спин</small><span id="cost">...</span>⭐</div>
+  </div>
+
+  <div class="bar">
+    <div class="label">🎁 Бесплатный спин</div>
+    <div class="value" id="free">...</div>
+  </div>
+
+  <div class="apiBox" id="apiBox">
+    <div style="font-weight:900">Нет API адреса</div>
+    <div style="color:rgba(255,255,255,.55);font-size:13px;line-height:1.25">
+      Вставь сюда публичный HTTPS-адрес бота (например ngrok URL), чтобы рулетка могла крутиться.
+    </div>
+    <div class="row">
+      <input id="apiInput" placeholder="https://xxxx.ngrok-free.dev" />
+      <button class="miniBtn" id="apiSave">Сохранить</button>
+    </div>
+  </div>
+
+  <div class="wheelCard">
+    <div class="wheelBox">
+      <div class="pointer"></div>
+      <canvas id="wheel" width="600" height="600"></canvas>
+      <div class="centerDot"></div>
+    </div>
+
+    <button class="btn" id="spinBtn" disabled>Крутить 🎡</button>
+    <div class="msg" id="msg">Загружаю…</div>
+    <div class="fine">Если открыть не из Telegram, initData будет пустой и спин не сработает.</div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const tg = window.Telegram?.WebApp;
+  if (tg) { tg.ready(); tg.expand(); }
+
+  const elBal = document.getElementById('bal');
+  const elCost = document.getElementById('cost');
+  const elFree = document.getElementById('free');
+  const elBtn = document.getElementById('spinBtn');
+  const elMsg = document.getElementById('msg');
+  const elApiBox = document.getElementById('apiBox');
+  const elApiInput = document.getElementById('apiInput');
+  const elApiSave = document.getElementById('apiSave');
+
+  const canvas = document.getElementById('wheel');
+  const ctx = canvas.getContext('2d');
+
+  const initData = tg?.initData || '';
+  const url = new URL(window.location.href);
+
+  // --- API url: from ?api= , else localStorage
+  const KEY = 'lucky_api_base_v1';
+  let API = url.searchParams.get('api') || localStorage.getItem(KEY) || '';
+  if (API) API = API.replace(/\/$/,''); // trim trailing /
+  if (API) localStorage.setItem(KEY, API);
+
+  let segments = [];
+  let cost = 15;
+  let freeAvailable = false;
+  let freeLeftSec = 0;
+  let balance = 0;
+
+  let locked = false;
+  let rotationDeg = 0;
+
+  function say(t){
+    elMsg.innerHTML = t || '';
+  }
+
+  function fmtTime(sec){
+    sec = Math.max(0, Math.floor(sec||0));
+    const h = String(Math.floor(sec/3600)).padStart(2,'0');
+    const m = String(Math.floor((sec%3600)/60)).padStart(2,'0');
+    const s = String(sec%60).padStart(2,'0');
+    return `${h}:${m}:${s}`;
+  }
+
+  function updateFreeUI(){
+    if (freeAvailable) {
+      elFree.textContent = 'доступен ✅';
+    } else {
+      elFree.textContent = 'через ' + fmtTime(freeLeftSec);
+    }
+  }
+
+  function updateBtn(){
+    const can = freeAvailable || (balance >= cost);
+    elBtn.disabled = locked || !can || !initData || !API;
+  }
+
+  function showApiInput(){
+    elApiBox.style.display = 'flex';
+    elApiInput.value = API || '';
+  }
+
+  function hideApiInput(){
+    elApiBox.style.display = 'none';
+  }
+
+  function apiGet(path){
+    return fetch(API + path, { method:'GET' })
+      .then(async r => {
+        const j = await r.json().catch(()=>({}));
+        if (!r.ok || j.ok === false) throw new Error(j.error || ('http_'+r.status));
+        return j;
+      });
+  }
+
+  function apiPost(path, body){
+    return fetch(API + path, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body || {})
+    }).then(async r => {
+      const j = await r.json().catch(()=>({}));
+      if (!r.ok || j.ok === false) throw new Error(j.error || ('http_'+r.status));
+      return j;
+    });
+  }
+
+  function drawWheel(){
+    const dpr = window.devicePixelRatio || 1;
+    const size = 600;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+    const cx = size/2, cy = size/2;
+    const r = size/2 - 10;
+    ctx.clearRect(0,0,size,size);
+
+    // base ring
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.fill();
+
+    const n = segments.length || 6;
+    const step = (Math.PI*2) / n;
+    const start0 = -Math.PI/2; // top
+
+    for (let i=0;i<n;i++){
+      const seg = segments[i] || {label:'?', id:'0'};
+      const a0 = start0 + i*step;
+      const a1 = a0 + step;
+
+      // colors alternating, plus subtle highlight for big discounts
+      const id = String(seg.id||'0');
+      const big = (id==='50' || id==='25' || id==='15');
+      const base = (i%2===0) ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)';
+      const glow = big ? 'rgba(255,211,106,0.10)' : base;
+
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,r,a0,a1,false);
+      ctx.closePath();
+      ctx.fillStyle = glow;
+      ctx.fill();
+
+      // separators
+      ctx.beginPath();
+      ctx.arc(cx,cy,r,a0,a1,false);
+      ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // label
+      const mid = (a0+a1)/2;
+      const tx = cx + Math.cos(mid) * (r*0.62);
+      const ty = cy + Math.sin(mid) * (r*0.62);
+      ctx.save();
+      ctx.translate(tx,ty);
+      ctx.rotate(mid + Math.PI/2);
+      ctx.font = '900 28px system-ui, -apple-system, Segoe UI, Roboto, Arial';
+      ctx.fillStyle = 'rgba(243,244,255,0.92)';
+      const label = seg.label || (seg.id ? (seg.id + '%') : '?');
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, 0, 0);
+      ctx.restore();
+    }
+
+    // outer stroke
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+    ctx.lineWidth = 6;
+    ctx.stroke();
+  }
+
+  function setWheelRotation(deg){
+    rotationDeg = deg;
+    canvas.style.transform = `rotate(${deg}deg)`;
+  }
+
+  function spinToIndex(targetIndex){
+    const n = segments.length || 6;
+    const slice = 360 / n;
+
+    // we want targetIndex center to land at top pointer
+    const centerOfTarget = targetIndex * slice + slice/2;
+    // pointer at 0deg (top) corresponds to canvas start at -90 in draw
+    // our canvas is drawn with start0=-90, so segment 0 center at -90+slice/2.
+    // easier: compensate by +90
+    const compensate = 90;
+    const targetDeg = compensate - centerOfTarget;
+
+    const extraTurns = 360 * (4 + Math.floor(Math.random()*2)); // 4-5 turns
+    const jitter = (Math.random() * (slice*0.65)) - (slice*0.325); // inside segment
+    const final = rotationDeg + extraTurns + targetDeg + jitter;
+
+    canvas.style.transition = 'transform 4.2s cubic-bezier(.12,.88,.18,1)';
+    setWheelRotation(final);
+
+    return new Promise(res => {
+      const onEnd = () => {
+        canvas.removeEventListener('transitionend', onEnd);
+        // normalize and remove transition
+        canvas.style.transition = 'none';
+        // keep rotation in [0..360) to avoid overflow
+        const norm = ((final % 360) + 360) % 360;
+        setWheelRotation(norm);
+        requestAnimationFrame(()=>{ canvas.style.transition=''; });
+        res();
+      };
+      canvas.addEventListener('transitionend', onEnd, { once:true });
+    });
+  }
+
+  function applyBalancePayload(b){
+    balance = Number(b.balance || 0);
+    cost = Number(b.cost || cost || 15);
+    freeAvailable = !!b.free_available;
+    freeLeftSec = Number(b.free_left_sec || 0);
+
+    elBal.textContent = String(balance);
+    elCost.textContent = String(cost);
+    updateFreeUI();
+    updateBtn();
+  }
+
+  function startCountdown(){
+    setInterval(() => {
+      if (!freeAvailable && freeLeftSec > 0){
+        freeLeftSec -= 1;
+        if (freeLeftSec <= 0){
+          freeLeftSec = 0;
+          freeAvailable = true;
+        }
+        updateFreeUI();
+        updateBtn();
+      }
+    }, 1000);
+  }
+
+  async function loadAll(){
+    if (!API){
+      say('Нужен параметр <b>?api=</b> или сохранённый API адрес.');
+      showApiInput();
+      updateBtn();
+      return;
+    }
+    hideApiInput();
+
+    try{
+      say('Загружаю…');
+
+      const cfg = await apiGet('/api/config');
+      cost = Number(cfg.cost || 15);
+      segments = Array.isArray(cfg.segments) ? cfg.segments : [];
+      if (!segments.length){
+        segments = [{id:'5',label:'5%'},{id:'10',label:'10%'},{id:'15',label:'15%'},{id:'25',label:'25%'},{id:'50',label:'50%'},{id:'0',label:'мимо'}];
+      }
+      drawWheel();
+      elCost.textContent = String(cost);
+
+      const b = await apiGet('/api/balance?initData=' + encodeURIComponent(initData));
+      applyBalancePayload(b);
+
+      say('Готово. Крути, если есть ⭐ или доступен бесплатный спин.');
+    }catch(e){
+      say('Ошибка: ' + e.message);
+      elBtn.disabled = true;
+      showApiInput();
+    }
+  }
+
+  elApiSave.addEventListener('click', () => {
+    const v = (elApiInput.value || '').trim().replace(/\/$/,'');
+    if (!v.startsWith('https://') && !v.startsWith('http://')){
+      say('API должен начинаться с <b>https://</b> (для Mini App почти всегда нужен HTTPS).');
+      return;
+    }
+    API = v;
+    localStorage.setItem(KEY, API);
+    loadAll();
+  });
+
+  elBtn.addEventListener('click', async () => {
+    if (locked) return;
+    locked = true;
+    updateBtn();
+    say('Кручу…');
+
+    try{
+      const res = await apiPost('/api/spin', { initData });
+
+      // choose target index
+      const rid = String(res?.result?.id ?? '');
+      let targetIndex = -1;
+
+      if (typeof res?.result?.index === 'number'){
+        targetIndex = res.result.index;
+      } else {
+        targetIndex = segments.findIndex(s => String(s.id) === rid);
+      }
+      if (targetIndex < 0) targetIndex = 0;
+
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+
+      await spinToIndex(targetIndex);
+
+      applyBalancePayload(res);
+
+      const p = Number(res?.result?.percent || 0);
+      const code = res?.result?.code || null;
+      const usedFree = !!res?.used_free;
+
+      if (p > 0 && code){
+        say(`🎉 Выпала скидка <b>${p}%</b><br>Код: <b>${code}</b><br>${usedFree ? 'Оплата: бесплатный спин' : ('Оплата: ' + cost + '⭐')}`);
+      } else {
+        say(`🙃 Мимо. ${usedFree ? 'Это был бесплатный спин' : ('Списано: ' + cost + '⭐')}`);
+      }
+
+      if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred(p>0 ? 'success' : 'warning');
+
+    }catch(e){
+      say('Ошибка спина: ' + e.message);
+    }finally{
+      locked = false;
+      updateBtn();
+    }
+  });
+
+  // init
+  drawWheel();
+  startCountdown();
+  loadAll();
+})();
+</script>
+</body>
+</html>

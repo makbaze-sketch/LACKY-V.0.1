@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/lucky",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/lucky/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
